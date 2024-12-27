@@ -1,0 +1,7 @@
+bin/
+bin-int/
+NESEmulator/
+vendor/
+Generate19.bat
+SimpleNES.vcxproj.user
+/.vs/SimpleNES/v16
