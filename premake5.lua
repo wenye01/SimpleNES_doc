@@ -16,11 +16,12 @@ project "SimpleNES"
     objdir("bin-int/%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}/%{prj.name}")
 
     files {
-        "src/**.h",
+        "include/**.h",
         "src/**.cpp",
     }
 
     includedirs {
+        "include",
         "src",
         "%{IncludeDir.SFML}"
     }
