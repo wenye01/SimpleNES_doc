@@ -114,4 +114,23 @@ namespace _NES
         }
     }
 
+    bool MainBus::setWriteCallback(IORegisters registe, std::function<void(Byte)> callback)
+    {
+        if (!callback)
+        {
+            LOG(Error, "callback argument is nullptr");
+            return false;
+        }
+        return writeCallbacks.emplace(registe, callback).second;
+    }
+
+    bool MainBus::setReadCallback(IORegisters registe, std::function<Byte(void)> callback)
+    {
+        if (!callback)
+        {
+            LOG(Error, "callback argument is nullptr");
+            return false;
+        }
+        return readCallbacks.emplace(registe, callback).second;
+    }
 }

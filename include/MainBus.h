@@ -39,7 +39,7 @@ namespace _NES
         void write(Address, Byte value);
 
         bool setWriteCallback(IORegisters registe, std::function<void(Byte)> callback);
-        bool setReadCallback(IORegisters registe, std::function<void(Byte)> callback);
+        bool setReadCallback(IORegisters registe, std::function<Byte(void)> callback);
 
 
     private:
