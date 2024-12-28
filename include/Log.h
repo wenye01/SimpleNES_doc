@@ -1,7 +1,21 @@
 #pragma once
 
 #include <iostream>
+#include <string>
 #include <fstream>
+#include <memory>
+#include <cstring>
+
+#ifndef __FILENAME__
+#define __FILENAME__ __FILE__
+#endif
+
+#define LOG(level, string) if(level <= _NES::Log::get().getLevel()) \
+{ _NES::Log::get().getStream() << '[' << __FILENAME__ << ":" << std::dec << __LINE__ << "] " << string << std::endl; }
+
+#define LOG_CPU \
+if (_NES::CpuTrace != sn::Log::get().getLevel()) ; \
+else _NES::Log::get().getCpuTraceStream()
 
 namespace _NES
 {

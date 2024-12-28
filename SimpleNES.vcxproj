@@ -99,11 +99,20 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="include\Cartridge.h" />
+    <ClInclude Include="include\CPU.h" />
+    <ClInclude Include="include\CPUOpencodes.h" />
+    <ClInclude Include="include\Emulator.h" />
     <ClInclude Include="include\Log.h" />
+    <ClInclude Include="include\MainBus.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Cartridge.cpp" />
+    <ClCompile Include="src\CPU.cpp" />
+    <ClCompile Include="src\Emulator.cpp" />
     <ClCompile Include="src\Log.cpp" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\MainBus.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

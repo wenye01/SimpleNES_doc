@@ -12,6 +12,11 @@
     <ClInclude Include="include\Log.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="include\Emulator.h" />
+    <ClInclude Include="include\Cartridge.h" />
+    <ClInclude Include="include\CPU.h" />
+    <ClInclude Include="include\CPUOpencodes.h" />
+    <ClInclude Include="include\MainBus.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Log.cpp">
@@ -20,5 +25,9 @@
     <ClCompile Include="src\main.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="src\Emulator.cpp" />
+    <ClCompile Include="src\Cartridge.cpp" />
+    <ClCompile Include="src\CPU.cpp" />
+    <ClCompile Include="src\MainBus.cpp" />
   </ItemGroup>
 </Project>
