@@ -1,11 +1,13 @@
-#pragma once
-
+#ifndef MEMORY_H
+#define MEMORY_H
 #include <vector>
-#include <functional>
 #include <unordered_map>
+#include <functional>
+#include <memory>
 #include "Cartridge.h"
+#include "Mapper.h"
 
-namespace _NES
+namespace sn
 {
     enum IORegisters
     {
@@ -21,10 +23,9 @@ namespace _NES
         JOY1 = 0x4016,
         JOY2 = 0x4017,
     };
-
     struct IORegistersHasher
     {
-        std::size_t operator()(_NES::IORegisters const& reg) const noexcept
+        std::size_t operator()(sn::IORegisters const & reg) const noexcept
         {
             return std::hash<std::uint32_t>{}(reg);
         }
@@ -32,22 +33,22 @@ namespace _NES
 
     class MainBus
     {
-    public:
-        MainBus();
+        public:
+            MainBus();
+            Byte read(Address addr);
+            void write(Address addr, Byte value);
+            bool setMapper(Mapper* mapper);
+            bool setWriteCallback(IORegisters reg, std::function<void(Byte)> callback);
+            bool setReadCallback(IORegisters reg, std::function<Byte(void)> callback);
+            const Byte* getPagePtr(Byte page);
+        private:
+            std::vector<Byte> m_RAM;
+            std::vector<Byte> m_extRAM;
+            Mapper* m_mapper;
 
-        Byte read(Address address);
-        void write(Address, Byte value);
-
-        bool setWriteCallback(IORegisters registe, std::function<void(Byte)> callback);
-        bool setReadCallback(IORegisters registe, std::function<Byte(void)> callback);
-
-
-    private:
-        std::vector<Byte> RAM;
-        std::vector<Byte> extRAM;
-
-        std::unordered_map<IORegisters, std::function<void(Byte)>, IORegistersHasher> writeCallbacks;
-        std::unordered_map<IORegisters, std::function<Byte(void)>, IORegistersHasher> readCallbacks;;
-
+            std::unordered_map<IORegisters, std::function<void(Byte)>, IORegistersHasher> m_writeCallbacks;
+            std::unordered_map<IORegisters, std::function<Byte(void)>, IORegistersHasher> m_readCallbacks;;
     };
-}
+};
+
+#endif // MEMORY_H

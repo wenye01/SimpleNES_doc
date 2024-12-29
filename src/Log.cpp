@@ -1,8 +1,7 @@
 #include "Log.h"
 
-namespace _NES
+namespace sn
 {
-// --------------Log-------------------
     Log::~Log()
     {
     }
@@ -44,11 +43,11 @@ namespace _NES
     }
 
 
-// --------------TeeBuf-------------------
-    TeeBuf::TeeBuf(std::streambuf* sb1, std::streambuf* sb2)
-        :m_sb1(sb1), m_sb2(sb2)
-    {}
 
+    TeeBuf::TeeBuf(std::streambuf * sb1, std::streambuf * sb2) :
+        m_sb1(sb1),
+        m_sb2(sb2)
+    {}
     int TeeBuf::overflow(int c)
     {
         if (c == EOF)
@@ -70,9 +69,9 @@ namespace _NES
         return r1 == 0 && r2 == 0 ? 0 : -1;
     }
 
-// --------------TeeStream-------------------
     TeeStream::TeeStream(std::ostream& o1, std::ostream& o2) :
         std::ostream(&m_tbuf),
         m_tbuf(o1.rdbuf(), o2.rdbuf())
     {}
+
 }

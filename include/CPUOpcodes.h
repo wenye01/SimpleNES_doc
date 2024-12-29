@@ -1,7 +1,7 @@
-#pragma once
+#ifndef CPUOPCODES_H_INCLUDED
+#define CPUOPCODES_H_INCLUDED
 
-
-namespace _NES
+namespace sn
 {
     const auto InstructionModeMask = 0x3;
 
@@ -70,14 +70,14 @@ namespace _NES
         ZeroPage_,
         Accumulator,
         Absolute_,
-        Indexed = 5,
+        Indexed         = 5,
         AbsoluteIndexed = 7,
     };
 
     enum Operation0
     {
-        BIT = 1,
-        STY = 4,
+        BIT  = 1,
+        STY  = 4,
         LDY,
         CPY,
         CPX,
@@ -91,7 +91,7 @@ namespace _NES
         RTI = 0x40,
         RTS = 0x60,
 
-        JMP = 0x4C,
+        JMP  = 0x4C,
         JMPI = 0x6C, //JMP Indirect
 
         PHP = 0x08,
@@ -127,7 +127,7 @@ namespace _NES
         BRK_
     };
 
-    // 6502所有指令的时钟周期，0表示没有这种指令
+    //0 implies unused opcode
     static const int OperationCycles[0x100] = {
             7, 6, 0, 0, 0, 3, 5, 0, 3, 2, 2, 0, 0, 4, 6, 0,
             2, 5, 0, 0, 0, 4, 6, 0, 2, 4, 0, 0, 0, 4, 7, 0,
@@ -145,5 +145,7 @@ namespace _NES
             2, 5, 0, 0, 0, 4, 6, 0, 2, 4, 0, 0, 0, 4, 7, 0,
             2, 6, 0, 0, 3, 3, 5, 0, 2, 2, 2, 2, 4, 4, 6, 0,
             2, 5, 0, 0, 0, 4, 6, 0, 2, 4, 0, 0, 0, 4, 7, 0,
-    };
+        };
 };
+
+#endif // CPUOPCODES_H_INCLUDED

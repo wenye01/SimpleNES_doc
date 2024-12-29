@@ -1,52 +1,71 @@
-#pragma once
-
-#include "CPUOpencodes.h"
+#ifndef CPU_H
+#define CPU_H
+#include "CPUOpcodes.h"
 #include "MainBus.h"
 
-namespace _NES
+namespace sn
 {
-    class CPU_6502
+
+    class CPU
     {
-    public:
-        CPU_6502(MainBus& mainBus);
+        public:
 
-        void step();
-        void reset();
-        void reset(Address start_address);
+            CPU(MainBus &mem);
 
-        Address getPC() { return PC; }
+            void step();
+            void reset();
+            void reset(Address start_addr);
+            void log();
 
-        // ?应该是从PPU读取消耗的周期
-        void skipDMACycles();
+            Address getPC() { return r_PC; }
+            void skipDMACycles();
 
-        // 外部调用中断
-        void interrupt(InterruptType type);
-    private:
-        // CPU执行中断
-        void interruptSequence(InterruptType type);
+            void interrupt(InterruptType type);
 
-        void pushStack(Byte value);
-        Byte pullStack();
+        private:
+            void interruptSequence(InterruptType type);
 
-        Address readAddress(Address address);
-        
-    private:
+            //Instructions are split into five sets to make decoding easier.
+            //These functions return true if they succeed
+            bool executeImplied(Byte opcode);
+            bool executeBranch(Byte opcode);
+            bool executeType0(Byte opcode);
+            bool executeType1(Byte opcode);
+            bool executeType2(Byte opcode);
 
-        int skipCycles;
-        int cycles;
+            Address readAddress(Address addr);
 
-        // 寄存器，pc有16bits，p有6bits，其余8bits
-        Address PC;
-        Byte SP;
-        Byte A;
-        Byte X;
-        Byte Y;
-        Byte P;
+            void pushStack(Byte value);
+            Byte pullStack();
 
-        // 中断类型
-        bool pendingNMI;
-        bool pendingIRQ;
+            //If a and b are in different pages, increases the m_SkipCycles by inc
+            void setPageCrossed(Address a, Address b, int inc = 1);
+            void setZN(Byte value);
 
-        MainBus& bus;
+            int m_skipCycles;
+            int m_cycles;
+
+            //Registers
+            Address r_PC;
+            Byte r_SP;
+            Byte r_A;
+            Byte r_X;
+            Byte r_Y;
+
+            //Status flags.
+            //Is storing them in one byte better ?
+            bool f_C;
+            bool f_Z;
+            bool f_I;
+            bool f_D;
+            bool f_V;
+            bool f_N;
+
+            bool m_pendingNMI;
+            bool m_pendingIRQ;
+
+            MainBus &m_bus;
     };
-}
+
+};
+#endif // CPU_H

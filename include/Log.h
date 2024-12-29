@@ -1,5 +1,5 @@
-#pragma once
-
+#ifndef LOG_H
+#define LOG_H
 #include <iostream>
 #include <string>
 #include <fstream>
@@ -10,14 +10,15 @@
 #define __FILENAME__ __FILE__
 #endif
 
-#define LOG(level, string) if(level <= _NES::Log::get().getLevel()) \
-{ _NES::Log::get().getStream() << '[' << __FILENAME__ << ":" << std::dec << __LINE__ << "] " << string << std::endl; }
+#define LOG(level) \
+if (level > sn::Log::get().getLevel()) ; \
+else sn::Log::get().getStream() << '[' << __FILENAME__ << ":" << std::dec << __LINE__ << "] "
 
 #define LOG_CPU \
-if (_NES::CpuTrace != sn::Log::get().getLevel()) ; \
-else _NES::Log::get().getCpuTraceStream()
+if (sn::CpuTrace != sn::Log::get().getLevel()) ; \
+else sn::Log::get().getCpuTraceStream()
 
-namespace _NES
+namespace sn
 {
     enum Level
     {
@@ -27,7 +28,6 @@ namespace _NES
         InfoVerbose,
         CpuTrace
     };
-
     class Log
     {
     public:
@@ -48,31 +48,32 @@ namespace _NES
     };
 
     //Courtesy of http://wordaligned.org/articles/cpp-streambufs#toctee-streams
-    // 分流输入数据，使两个流同步，将日志分别输出到控制台和文件中
     class TeeBuf : public std::streambuf
     {
-    public:
-        // Construct a streambuf which tees output to both input
-        // streambufs.
-        TeeBuf(std::streambuf* sb1, std::streambuf* sb2);
-    private:
-        // This tee buffer has no buffer. So every character "overflows"
-        // and can be put directly into the teed buffers.
-        virtual int overflow(int c);
-        // Sync both teed buffers.
-        virtual int sync();
-    private:
-        std::streambuf* m_sb1;
-        std::streambuf* m_sb2;
+        public:
+            // Construct a streambuf which tees output to both input
+            // streambufs.
+            TeeBuf(std::streambuf* sb1, std::streambuf* sb2);
+        private:
+            // This tee buffer has no buffer. So every character "overflows"
+            // and can be put directly into the teed buffers.
+            virtual int overflow(int c);
+            // Sync both teed buffers.
+            virtual int sync();
+        private:
+            std::streambuf* m_sb1;
+            std::streambuf* m_sb2;
     };
 
     class TeeStream : public std::ostream
     {
-    public:
-        // Construct an ostream which tees output to the supplied
-        // ostreams.
-        TeeStream(std::ostream& o1, std::ostream& o2);
-    private:
-        TeeBuf m_tbuf;
+        public:
+            // Construct an ostream which tees output to the supplied
+            // ostreams.
+            TeeStream(std::ostream& o1, std::ostream& o2);
+        private:
+            TeeBuf m_tbuf;
     };
-}
+
+};
+#endif // LOG_H

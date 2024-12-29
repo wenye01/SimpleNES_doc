@@ -1,136 +1,171 @@
 #include "MainBus.h"
-#include "Log.h"
 #include <cstring>
+#include "Log.h"
 
-namespace _NES
+namespace sn
 {
-    MainBus::MainBus()
-        :RAM(0x800, 0)
+    MainBus::MainBus() :
+        m_RAM(0x800, 0),
+        m_mapper(nullptr)
     {
-
     }
 
-    Byte MainBus::read(Address address)
+    Byte MainBus::read(Address addr)
     {
-        if (address < 0x2000) // 内存
+        if (addr < 0x2000)
+            return m_RAM[addr & 0x7ff];
+        else if (addr < 0x4020)
         {
-            // 因为有三份数据镜像，只取0x7ff以内数据
-            return RAM[address & 0x7ff]; 
-        }
-        else if (address < 0x4020)
-        {
-            if (address < 0x4000) // PPU寄存器
+            if (addr < 0x4000) //PPU registers, mirrored
             {
-                auto it = readCallbacks.find(static_cast<IORegisters>(address % 0x2007));
-                if (it != readCallbacks.end())
-                {
-                    return (it->second)();
-                }
+                auto it = m_readCallbacks.find(static_cast<IORegisters>(addr & 0x2007));
+                if (it != m_readCallbacks.end())
+                    return (it -> second)();
+                    //Second object is the pointer to the function object
+                    //Dereference the function pointer and call it
                 else
-                {
-                    LOG(InfoVerbose, "No read callback registered for I / O register at: " + std::to_string(address));
-                }
+                    LOG(InfoVerbose) << "No read callback registered for I/O register at: " << std::hex << +addr << std::endl;
             }
-            else if (address < 0x4018 && address >= 0x4014)
+            else if (addr < 0x4018 && addr >= 0x4014) //Only *some* IO registers
             {
-                auto it = readCallbacks.find(static_cast<IORegisters>(address));
-                if (it != readCallbacks.end())
-                {
-                    return (it->second)();
-                }
+                auto it = m_readCallbacks.find(static_cast<IORegisters>(addr));
+                if (it != m_readCallbacks.end())
+                    return (it -> second)();
+                    //Second object is the pointer to the function object
+                    //Dereference the function pointer and call it
                 else
-                {
-                    LOG(InfoVerbose, "No read callback registered for I / O register at: " + std::to_string(address));
-                }
+                    LOG(InfoVerbose) << "No read callback registered for I/O register at: " << std::hex << +addr << std::endl;
             }
             else
+                LOG(InfoVerbose) << "Read access attempt at: " << std::hex << +addr << std::endl;
+        }
+        else if (addr < 0x6000)
+        {
+            LOG(InfoVerbose) << "Expansion ROM read attempted. This is currently unsupported" << std::endl;
+        }
+        else if (addr < 0x8000)
+        {
+            if (m_mapper->hasExtendedRAM())
             {
-                LOG(InfoVerbose, "Read access attempt at: " + std::to_string(address));
+                return m_extRAM[addr - 0x6000];
             }
-        }
-        else if (address < 0x6000)
-        {
-            LOG(InfoVerbose, "Expansion ROM read attempted. This is currently unsupported");
-        }
-        else if (address < 0x8000)
-        {
-            // 卡带上的额外内存
         }
         else
         {
-            // mapper
+            return m_mapper->readPRG(addr);
         }
         return 0;
     }
 
-    void MainBus::write(Address address, Byte value)
+    void MainBus::write(Address addr, Byte value)
     {
-        if (address < 0x2000)
+        if (addr < 0x2000)
+            m_RAM[addr & 0x7ff] = value;
+        else if (addr < 0x4020)
         {
-            RAM[address & 0x7fff] = value;
-        }
-        else if (address < 0x4020)
-        {
-            if (address < 0x4000)
+            if (addr < 0x4000) //PPU registers, mirrored
             {
-                auto it = readCallbacks.find(static_cast<IORegisters>(address % 0x2007));
-                if (it != readCallbacks.end())
-                {
-                    (it->second)();
-                }
+                auto it = m_writeCallbacks.find(static_cast<IORegisters>(addr & 0x2007));
+                if (it != m_writeCallbacks.end())
+                    (it -> second)(value);
+                    //Second object is the pointer to the function object
+                    //Dereference the function pointer and call it
                 else
-                {
-                    LOG(InfoVerbose, "No write callback registered for I / O register at: " + std::to_string(address));
-                }
+                    LOG(InfoVerbose) << "No write callback registered for I/O register at: " << std::hex << +addr << std::endl;
             }
-            else if (address < 0x4017 && address >= 0x4014)// ?
+            else if (addr < 0x4017 && addr >= 0x4014) //only some registers
             {
-                auto it = readCallbacks.find(static_cast<IORegisters>(address));
-                if (it != readCallbacks.end())
-                {
-                    (it->second)();
-                }
+                auto it = m_writeCallbacks.find(static_cast<IORegisters>(addr));
+                if (it != m_writeCallbacks.end())
+                    (it -> second)(value);
+                    //Second object is the pointer to the function object
+                    //Dereference the function pointer and call it
                 else
-                {
-                    LOG(InfoVerbose, "No write callback registered for I / O register at: " + std::to_string(address));
-                }
+                    LOG(InfoVerbose) << "No write callback registered for I/O register at: " << std::hex << +addr << std::endl;
             }
             else
+                LOG(InfoVerbose) << "Write access attempt at: " << std::hex << +addr << std::endl;
+        }
+        else if (addr < 0x6000)
+        {
+            LOG(InfoVerbose) << "Expansion ROM access attempted. This is currently unsupported" << std::endl;
+        }
+        else if (addr < 0x8000)
+        {
+            if (m_mapper->hasExtendedRAM())
             {
-                LOG(InfoVerbose, "Write access attempt at: " + std::to_string(address));
+                m_extRAM[addr - 0x6000] = value;
             }
-        }
-        else if (address < 0x6000)
-        {
-            LOG(InfoVerbose, "Expansion ROM read attempted. This is currently unsupported");
-        }
-        else if (address < 0x8000)
-        {
-            // 卡带上的额外内存
         }
         else
         {
-            // mapper
+            m_mapper->writePRG(addr, value);
         }
     }
 
-    bool MainBus::setWriteCallback(IORegisters registe, std::function<void(Byte)> callback)
+    const Byte* MainBus::getPagePtr(Byte page)
     {
-        if (!callback)
+        Address addr = page << 8;
+        if (addr < 0x2000)
         {
-            LOG(Error, "callback argument is nullptr");
-            return false;
+            return &m_RAM[addr & 0x7ff];
         }
-        return writeCallbacks.emplace(registe, callback).second;
+        else if (addr < 0x4020)
+        {
+            LOG(Error) << "Register address memory pointer access attempt" << std::endl;
+        }
+        else if (addr < 0x6000)
+        {
+            LOG(Error) << "Expansion ROM access attempted, which is unsupported" << std::endl;
+        }
+        else if (addr < 0x8000)
+        {
+            if (m_mapper->hasExtendedRAM())
+            {
+                return &m_extRAM[addr - 0x6000];
+            }
+        }
+        else
+        {
+            LOG(Error) << "Unexpected DMA request: " << std::hex << "0x" << +addr << " (" << +page << ")" << std::dec << std::endl;
+        }
+        return nullptr;
     }
 
-    bool MainBus::setReadCallback(IORegisters registe, std::function<Byte(void)> callback)
+    bool MainBus::setMapper(Mapper* mapper)
+    {
+        m_mapper = mapper;
+
+        if (!mapper)
+        {
+            LOG(Error) << "Mapper pointer is nullptr" << std::endl;
+            return false;
+        }
+
+        if (mapper->hasExtendedRAM())
+            m_extRAM.resize(0x2000);
+
+        return true;
+    }
+
+    bool MainBus::setWriteCallback(IORegisters reg, std::function<void(Byte)> callback)
     {
         if (!callback)
         {
-            LOG(Error, "callback argument is nullptr");
+            LOG(Error) << "callback argument is nullptr" << std::endl;
             return false;
         }
-        return readCallbacks.emplace(registe, callback).second;
+        return m_writeCallbacks.emplace(reg, callback).second;
     }
-}
+
+    bool MainBus::setReadCallback(IORegisters reg, std::function<Byte(void)> callback)
+    {
+        if (!callback)
+        {
+            LOG(Error) << "callback argument is nullptr" << std::endl;
+            return false;
+        }
+        return m_readCallbacks.emplace(reg, callback).second;
+    }
+
+};

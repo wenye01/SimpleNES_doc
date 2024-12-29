@@ -37,7 +37,8 @@ project "SimpleNES"
     links{
         "sfml-graphics",
         "sfml-window",
-        "sfml-system"
+        "sfml-system",
+        "sfml-audio"
     }
 
     filter "system:windows"

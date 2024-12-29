@@ -67,7 +67,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>sfml-graphics.lib;sfml-window.lib;sfml-system.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>sfml-graphics.lib;sfml-window.lib;sfml-system.lib;sfml-audio.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>vendor\SFML\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
@@ -91,7 +91,7 @@
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>sfml-graphics.lib;sfml-window.lib;sfml-system.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>sfml-graphics.lib;sfml-window.lib;sfml-system.lib;sfml-audio.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>vendor\SFML\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
@@ -99,20 +99,48 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="include\Cartridge.h" />
     <ClInclude Include="include\CPU.h" />
-    <ClInclude Include="include\CPUOpencodes.h" />
+    <ClInclude Include="include\CPUOpcodes.h" />
+    <ClInclude Include="include\Cartridge.h" />
+    <ClInclude Include="include\Controller.h" />
     <ClInclude Include="include\Emulator.h" />
     <ClInclude Include="include\Log.h" />
     <ClInclude Include="include\MainBus.h" />
+    <ClInclude Include="include\Mapper.h" />
+    <ClInclude Include="include\MapperAxROM.h" />
+    <ClInclude Include="include\MapperCNROM.h" />
+    <ClInclude Include="include\MapperColorDreams.h" />
+    <ClInclude Include="include\MapperGxROM.h" />
+    <ClInclude Include="include\MapperMMC3.h" />
+    <ClInclude Include="include\MapperNROM.h" />
+    <ClInclude Include="include\MapperSxROM.h" />
+    <ClInclude Include="include\MapperUxROM.h" />
+    <ClInclude Include="include\PPU.h" />
+    <ClInclude Include="include\PaletteColors.h" />
+    <ClInclude Include="include\PictureBus.h" />
+    <ClInclude Include="include\VirtualScreen.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\Cartridge.cpp" />
     <ClCompile Include="src\CPU.cpp" />
+    <ClCompile Include="src\Cartridge.cpp" />
+    <ClCompile Include="src\Controller.cpp" />
     <ClCompile Include="src\Emulator.cpp" />
+    <ClCompile Include="src\KeybindingsParser.cpp" />
     <ClCompile Include="src\Log.cpp" />
-    <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\MainBus.cpp" />
+    <ClCompile Include="src\Mapper.cpp" />
+    <ClCompile Include="src\MapperAxROM.cpp" />
+    <ClCompile Include="src\MapperCNROM.cpp" />
+    <ClCompile Include="src\MapperColorDreams.cpp" />
+    <ClCompile Include="src\MapperGxROM.cpp" />
+    <ClCompile Include="src\MapperMMC3.cpp" />
+    <ClCompile Include="src\MapperNROM.cpp" />
+    <ClCompile Include="src\MapperSxROM.cpp" />
+    <ClCompile Include="src\MapperUxROM.cpp" />
+    <ClCompile Include="src\PPU.cpp" />
+    <ClCompile Include="src\PictureBus.cpp" />
+    <ClCompile Include="src\VirtualScreen.cpp" />
+    <ClCompile Include="src\main.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

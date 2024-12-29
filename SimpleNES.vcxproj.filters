@@ -9,25 +9,127 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\CPU.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\CPUOpcodes.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Cartridge.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Controller.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Emulator.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="include\Log.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="include\Emulator.h" />
-    <ClInclude Include="include\Cartridge.h" />
-    <ClInclude Include="include\CPU.h" />
-    <ClInclude Include="include\CPUOpencodes.h" />
-    <ClInclude Include="include\MainBus.h" />
+    <ClInclude Include="include\MainBus.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Mapper.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\MapperAxROM.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\MapperCNROM.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\MapperColorDreams.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\MapperGxROM.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\MapperMMC3.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\MapperNROM.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\MapperSxROM.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\MapperUxROM.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\PPU.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\PaletteColors.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\PictureBus.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\VirtualScreen.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\CPU.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Cartridge.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Controller.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Emulator.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\KeybindingsParser.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
     <ClCompile Include="src\Log.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\MainBus.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Mapper.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\MapperAxROM.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\MapperCNROM.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\MapperColorDreams.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\MapperGxROM.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\MapperMMC3.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\MapperNROM.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\MapperSxROM.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\MapperUxROM.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\PPU.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\PictureBus.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\VirtualScreen.cpp">
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="src\main.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="src\Emulator.cpp" />
-    <ClCompile Include="src\Cartridge.cpp" />
-    <ClCompile Include="src\CPU.cpp" />
-    <ClCompile Include="src\MainBus.cpp" />
   </ItemGroup>
 </Project>
