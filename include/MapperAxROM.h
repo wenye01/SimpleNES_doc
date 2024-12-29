@@ -1,7 +1,9 @@
+#pragma once
+
 #include "Mapper.h"
 #include "PictureBus.h"
 
-namespace sn
+namespace _NES
 {
     class MapperAxROM : public Mapper
     {

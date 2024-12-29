@@ -1,8 +1,7 @@
-#ifndef MAPPERSXROM_H
-#define MAPPERSXROM_H
+#pragma once
 #include "Mapper.h"
 
-namespace sn
+namespace _NES
 {
     class MapperSxROM : public Mapper
     {
@@ -41,4 +40,3 @@ namespace sn
             std::vector<Byte> m_characterRAM;
     };
 }
-#endif // MAPPERSXROM_H

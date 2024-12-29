@@ -1,7 +1,7 @@
 #include "MapperUxROM.h"
 #include "Log.h"
 
-namespace sn
+namespace _NES
 {
     MapperUxROM::MapperUxROM(Cartridge &cart) :
         Mapper(cart, Mapper::UxROM),

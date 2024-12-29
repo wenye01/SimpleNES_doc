@@ -1,8 +1,7 @@
-#ifndef VIRTUALSCREEN_H
-#define VIRTUALSCREEN_H
+#pragma once
 #include <SFML/Graphics.hpp>
 
-namespace sn
+namespace _NES
 {
     class VirtualScreen : public sf::Drawable
     {
@@ -18,4 +17,3 @@ namespace sn
         sf::VertexArray m_vertices;
     };
 };
-#endif // VIRTUALSCREEN_H

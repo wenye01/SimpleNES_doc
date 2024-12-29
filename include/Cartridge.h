@@ -1,10 +1,9 @@
-#ifndef CARTRIDGE_H
-#define CARTRIDGE_H
+#pragma once
 #include <vector>
 #include <string>
 #include <cstdint>
 
-namespace sn
+namespace _NES
 {
     using Byte = std::uint8_t;
     using Address = std::uint16_t;
@@ -29,5 +28,3 @@ namespace sn
     };
 
 };
-
-#endif // CARTRIDGE_H

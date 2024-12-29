@@ -1,6 +1,6 @@
 #include "MapperGxROM.h"
 #include "Log.h"
-namespace sn
+namespace _NES
 {
 
     MapperGxROM::MapperGxROM(Cartridge &cart, std::function<void(void)> mirroring_cb) :

@@ -1,7 +1,6 @@
-#ifndef CPUOPCODES_H_INCLUDED
-#define CPUOPCODES_H_INCLUDED
+#pragma once
 
-namespace sn
+namespace _NES
 {
     const auto InstructionModeMask = 0x3;
 
@@ -122,8 +121,8 @@ namespace sn
 
     enum InterruptType
     {
-        IRQ,
-        NMI,
+        IRQ_,
+        NMI_,
         BRK_
     };
 
@@ -147,5 +146,3 @@ namespace sn
             2, 5, 0, 0, 0, 4, 6, 0, 2, 4, 0, 0, 0, 4, 7, 0,
         };
 };
-
-#endif // CPUOPCODES_H_INCLUDED

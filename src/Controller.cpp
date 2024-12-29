@@ -1,6 +1,6 @@
 #include "Controller.h"
 
-namespace sn
+namespace _NES
 {
     Controller::Controller() :
         m_keyStates(0),

@@ -1,7 +1,7 @@
 #include "PictureBus.h"
 #include "Log.h"
 
-namespace sn
+namespace _NES
 {
 
     PictureBus::PictureBus() :

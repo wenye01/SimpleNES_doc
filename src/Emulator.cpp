@@ -5,7 +5,7 @@
 #include <thread>
 #include <chrono>
 
-namespace sn
+namespace _NES
 {
     Emulator::Emulator() :
         m_cpu(m_bus),
@@ -37,7 +37,7 @@ namespace sn
             LOG(Error) << "Critical error: Failed to set I/O callbacks" << std::endl;
         }
 
-        m_ppu.setInterruptCallback([&](){ m_cpu.interrupt(InterruptType::NMI); });
+        m_ppu.setInterruptCallback([&](){ m_cpu.interrupt(InterruptType::NMI_); });
     }
 
     void Emulator::run(std::string rom_path)
@@ -47,7 +47,7 @@ namespace sn
 
         m_mapper = Mapper::createMapper(static_cast<Mapper::Type>(m_cartridge.getMapper()),
                                         m_cartridge,
-                                        [&](){ m_cpu.interrupt(InterruptType::IRQ); },
+                                        [&](){ m_cpu.interrupt(InterruptType::IRQ_); },
                                         [&](){ m_pictureBus.updateMirroring(); });
         if (!m_mapper)
         {

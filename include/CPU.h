@@ -1,9 +1,8 @@
-#ifndef CPU_H
-#define CPU_H
+#pragma once
 #include "CPUOpcodes.h"
 #include "MainBus.h"
 
-namespace sn
+namespace _NES
 {
 
     class CPU
@@ -17,7 +16,7 @@ namespace sn
             void reset(Address start_addr);
             void log();
 
-            Address getPC() { return r_PC; }
+            Address getPC() { return PC; }
             void skipDMACycles();
 
             void interrupt(InterruptType type);
@@ -46,11 +45,22 @@ namespace sn
             int m_cycles;
 
             //Registers
-            Address r_PC;
-            Byte r_SP;
-            Byte r_A;
-            Byte r_X;
-            Byte r_Y;
+            Address PC;
+            Byte SP;
+            Byte A;
+            Byte X;
+            Byte Y;
+
+            struct
+            {
+                Byte C : 1;
+                Byte Z : 1;
+                Byte I : 1;
+                Byte D : 1;
+                Byte   : 2;
+                Byte V : 1;
+                Byte N : 1;
+            }P;
 
             //Status flags.
             //Is storing them in one byte better ?
@@ -61,11 +71,10 @@ namespace sn
             bool f_V;
             bool f_N;
 
-            bool m_pendingNMI;
-            bool m_pendingIRQ;
+            bool pendingNMI;
+            bool pendingIRQ;
 
-            MainBus &m_bus;
+            MainBus &bus;
     };
 
 };
-#endif // CPU_H

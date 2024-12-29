@@ -1,3 +1,4 @@
+#pragma once
 #include <SFML/Config.hpp>
 
 //Colors in RGBA (8 bit colors)

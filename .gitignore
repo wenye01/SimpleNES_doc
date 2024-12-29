@@ -3,5 +3,8 @@ bin-int/
 NESEmulator/
 vendor/
 Generate19.bat
+SimpleNES.sln
+SimpleNES.vcxproj
+SimpleNES.vcxproj.filters
 SimpleNES.vcxproj.user
 /.vs/SimpleNES/v16

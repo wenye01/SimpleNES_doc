@@ -1,8 +1,7 @@
-#ifndef MAPPERUXROM_H
-#define MAPPERUXROM_H
+#pragma once
 #include "Mapper.h"
 
-namespace sn
+namespace _NES
 {
     class MapperUxROM : public Mapper
     {
@@ -23,4 +22,3 @@ namespace sn
 
     };
 }
-#endif // MAPPERUXROM_H

@@ -1,8 +1,7 @@
-#ifndef MAPPERNROM_H
-#define MAPPERNROM_H
+#pragma once
 #include "Mapper.h"
 
-namespace sn
+namespace _NES
 {
     class MapperNROM : public Mapper
     {
@@ -21,4 +20,3 @@ namespace sn
 
     };
 }
-#endif // MAPPERNROM_H

@@ -1,7 +1,7 @@
 #include "MapperColorDreams.h"
 #include "Log.h"
 
-namespace sn
+namespace _NES
 {
 
     MapperColorDreams::MapperColorDreams(Cartridge &cart,std::function<void(void)> mirroring_cb) :

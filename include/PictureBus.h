@@ -1,10 +1,9 @@
-#ifndef PICTUREBUS_H
-#define PICTUREBUS_H
+#pragma once
 #include <vector>
 #include "Cartridge.h"
 #include "Mapper.h"
 
-namespace sn
+namespace _NES
 {
     class PictureBus
     {
@@ -26,4 +25,3 @@ namespace sn
             Mapper* m_mapper;
     };
 }
-#endif // PICTUREBUS_H

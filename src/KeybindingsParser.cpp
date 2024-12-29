@@ -7,7 +7,7 @@
 #include "Controller.h"
 #include "Log.h"
 
-namespace sn
+namespace _NES
 {
     // trim from start (construct new string)
     inline std::string ltrim(const std::string &str)

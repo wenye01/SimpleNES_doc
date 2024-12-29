@@ -4,7 +4,7 @@
 #include <fstream>
 #include <string>
 
-namespace sn
+namespace _NES
 {
     Cartridge::Cartridge() :
         m_nameTableMirroring(0),

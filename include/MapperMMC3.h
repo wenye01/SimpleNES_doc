@@ -2,7 +2,7 @@
 #include "Mapper.h"
 #include <array>
 
-namespace sn
+namespace _NES
 {
 
   class MapperMMC3 : public Mapper
@@ -46,4 +46,4 @@ namespace sn
     std::function<void()> m_interruptCallback;
   };
 
-} // namespace sn
+} // namespace _NES

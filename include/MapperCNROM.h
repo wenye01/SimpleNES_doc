@@ -1,8 +1,7 @@
-#ifndef MAPPERCNROM_H
-#define MAPPERCNROM_H
+#pragma once
 #include "Mapper.h"
 
-namespace sn
+namespace _NES
 {
     class MapperCNROM : public Mapper
     {
@@ -19,4 +18,3 @@ namespace sn
             Address m_selectCHR;
     };
 }
-#endif // MAPPERCNROM_H

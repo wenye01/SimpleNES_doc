@@ -1,6 +1,6 @@
 #include "VirtualScreen.h"
 
-namespace sn
+namespace _NES
 {
     void VirtualScreen::create(unsigned int w, unsigned int h, float pixel_size, sf::Color color)
     {

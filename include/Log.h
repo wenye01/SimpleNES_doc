@@ -1,5 +1,4 @@
-#ifndef LOG_H
-#define LOG_H
+#pragma once
 #include <iostream>
 #include <string>
 #include <fstream>
@@ -11,14 +10,14 @@
 #endif
 
 #define LOG(level) \
-if (level > sn::Log::get().getLevel()) ; \
-else sn::Log::get().getStream() << '[' << __FILENAME__ << ":" << std::dec << __LINE__ << "] "
+if (level > _NES::Log::get().getLevel()) ; \
+else _NES::Log::get().getStream() << '[' << __FILENAME__ << ":" << std::dec << __LINE__ << "] "
 
 #define LOG_CPU \
-if (sn::CpuTrace != sn::Log::get().getLevel()) ; \
-else sn::Log::get().getCpuTraceStream()
+if (_NES::CpuTrace != _NES::Log::get().getLevel()) ; \
+else _NES::Log::get().getCpuTraceStream()
 
-namespace sn
+namespace _NES
 {
     enum Level
     {
@@ -76,4 +75,3 @@ namespace sn
     };
 
 };
-#endif // LOG_H

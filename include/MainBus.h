@@ -1,5 +1,4 @@
-#ifndef MEMORY_H
-#define MEMORY_H
+#pragma once
 #include <vector>
 #include <unordered_map>
 #include <functional>
@@ -7,7 +6,7 @@
 #include "Cartridge.h"
 #include "Mapper.h"
 
-namespace sn
+namespace _NES
 {
     enum IORegisters
     {
@@ -25,7 +24,7 @@ namespace sn
     };
     struct IORegistersHasher
     {
-        std::size_t operator()(sn::IORegisters const & reg) const noexcept
+        std::size_t operator()(_NES::IORegisters const & reg) const noexcept
         {
             return std::hash<std::uint32_t>{}(reg);
         }
@@ -50,5 +49,3 @@ namespace sn
             std::unordered_map<IORegisters, std::function<Byte(void)>, IORegistersHasher> m_readCallbacks;;
     };
 };
-
-#endif // MEMORY_H

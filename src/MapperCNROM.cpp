@@ -1,7 +1,7 @@
 #include "MapperCNROM.h"
 #include "Log.h"
 
-namespace sn
+namespace _NES
 {
     MapperCNROM::MapperCNROM(Cartridge &cart) :
         Mapper(cart, Mapper::CNROM),

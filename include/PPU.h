@@ -1,5 +1,4 @@
-#ifndef PPU_H
-#define PPU_H
+#pragma once
 #include <functional>
 #include <array>
 #include "PictureBus.h"
@@ -7,7 +6,7 @@
 #include "VirtualScreen.h"
 #include "PaletteColors.h"
 
-namespace sn
+namespace _NES
 {
     const int ScanlineCycleLength = 341;
     const int ScanlineEndCycle = 340;
@@ -100,5 +99,3 @@ namespace sn
             std::vector<std::vector<sf::Color>> m_pictureBuffer;
     };
 }
-
-#endif // PPU_H

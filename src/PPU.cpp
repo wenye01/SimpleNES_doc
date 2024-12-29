@@ -1,7 +1,7 @@
 #include "PPU.h"
 #include "Log.h"
 
-namespace sn
+namespace _NES
 {
     PPU::PPU(PictureBus& bus, VirtualScreen& screen) :
         m_bus(bus),

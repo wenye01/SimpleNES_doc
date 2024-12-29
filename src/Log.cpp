@@ -1,6 +1,6 @@
 #include "Log.h"
 
-namespace sn
+namespace _NES
 {
     Log::~Log()
     {

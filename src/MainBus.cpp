@@ -2,7 +2,7 @@
 #include <cstring>
 #include "Log.h"
 
-namespace sn
+namespace _NES
 {
     MainBus::MainBus() :
         m_RAM(0x800, 0),

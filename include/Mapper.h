@@ -1,11 +1,10 @@
-#ifndef MAPPER_H
-#define MAPPER_H
+#pragma once
 #include "CPUOpcodes.h"
 #include "Cartridge.h"
 #include <memory>
 #include <functional>
 
-namespace sn
+namespace _NES
 {
     enum NameTableMirroring
     {
@@ -56,5 +55,3 @@ namespace sn
             Type m_type;
     };
 }
-
-#endif //MAPPER_H

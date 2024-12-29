@@ -1,10 +1,9 @@
-#ifndef CONTROLLER_H
-#define CONTROLLER_H
+#pragma once
 #include <SFML/Window.hpp>
 #include <cstdint>
 #include <vector>
 
-namespace sn
+namespace _NES
 {
     using Byte = std::uint8_t;
     class Controller
@@ -35,5 +34,3 @@ namespace sn
 //         sf::Keyboard::Key m_keyBindings[TotalButtons];
     };
 }
-
-#endif // CONTROLLER_H

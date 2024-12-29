@@ -1,9 +1,7 @@
-#ifndef MAPPERCOLORDREAMS_H_INCLUDED
-#define MAPPERCOLORDREAMS_H_INCLUDED
-
+#pragma once
 #include "Mapper.h"
 
-namespace sn
+namespace _NES
 {
     class MapperColorDreams : public Mapper
     {
@@ -23,5 +21,3 @@ namespace sn
         std::function<void(void)> m_mirroringCallback;
     };
 }
-
-#endif // MAPPERCOLORDREAMS_H_INCLUDED

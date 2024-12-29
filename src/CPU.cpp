@@ -3,12 +3,12 @@
 #include "Log.h"
 #include <iomanip>
 
-namespace sn
+namespace _NES
 {
     CPU::CPU(MainBus &mem) :
-        m_pendingNMI(false),
-        m_pendingIRQ(false),
-        m_bus(mem)
+        pendingNMI(false),
+        pendingIRQ(false),
+        bus(mem)
     {}
 
     void CPU::reset()
@@ -19,23 +19,23 @@ namespace sn
     void CPU::reset(Address start_addr)
     {
         m_skipCycles = m_cycles = 0;
-        r_A = r_X = r_Y = 0;
-        f_I = true;
-        f_C = f_D = f_N = f_V = f_Z = false;
-        r_PC = start_addr;
-        r_SP = 0xfd; //documented startup state
+        A = X = Y = 0;
+        P.I = true;
+        P.C = P.D = P.N = P.V = P.Z = false;
+        PC = start_addr;
+        SP = 0xfd; //documented startup state
     }
 
     void CPU::interrupt(InterruptType type)
     {
         switch (type)
         {
-        case InterruptType::NMI:
-            m_pendingNMI = true;
+        case InterruptType::NMI_:
+            pendingNMI = true;
             break;
 
-        case InterruptType::IRQ:
-            m_pendingIRQ = true;
+        case InterruptType::IRQ_:
+            pendingIRQ = true;
             break;
 
         default:
@@ -45,35 +45,35 @@ namespace sn
 
     void CPU::interruptSequence(InterruptType type)
     {
-        if (f_I && type != NMI && type != BRK_)
+        if (P.I && type != NMI_ && type != BRK_)
             return;
 
         if (type == BRK_) //Add one if BRK, a quirk of 6502
-            ++r_PC;
+            ++PC;
 
-        pushStack(r_PC >> 8);
-        pushStack(r_PC);
+        pushStack(PC >> 8);
+        pushStack(PC);
 
-        Byte flags = f_N << 7 |
-                     f_V << 6 |
+        Byte flags = P.N << 7 |
+                     P.V << 6 |
                        1 << 5 | //unused bit, supposed to be always 1
           (type == BRK_) << 4 | //B flag set if BRK
-                     f_D << 3 |
-                     f_I << 2 |
-                     f_Z << 1 |
-                     f_C;
+                     P.D << 3 |
+                     P.I << 2 |
+                     P.Z << 1 |
+                     P.C;
         pushStack(flags);
 
-        f_I = true;
+        P.I = true;
 
         switch (type)
         {
-            case IRQ:
+            case IRQ_:
             case BRK_:
-                r_PC = readAddress(IRQVector);
+                PC = readAddress(IRQVector);
                 break;
-            case NMI:
-                r_PC = readAddress(NMIVector);
+            case NMI_:
+                PC = readAddress(NMIVector);
                 break;
         }
 
@@ -84,19 +84,19 @@ namespace sn
 
     void CPU::pushStack(Byte value)
     {
-        m_bus.write(0x100 | r_SP, value);
-        --r_SP; //Hardware stacks grow downward!
+        bus.write(0x100 | SP, value);
+        --SP; //Hardware stacks grow downward!
     }
 
     Byte CPU::pullStack()
     {
-        return m_bus.read(0x100 | ++r_SP);
+        return bus.read(0x100 | ++SP);
     }
 
     void CPU::setZN(Byte value)
     {
-        f_Z = !value;
-        f_N = value & 0x80;
+        P.Z = !value;
+        P.N = value & 0x80;
     }
 
     void CPU::setPageCrossed(Address a, Address b, int inc)
@@ -122,40 +122,40 @@ namespace sn
         m_skipCycles = 0;
 
         // NMI has higher priority, check for it first
-        if (m_pendingNMI)
+        if (pendingNMI)
         {
-            interruptSequence(NMI);
-            m_pendingNMI = m_pendingIRQ = false;
+            interruptSequence(NMI_);
+            pendingNMI = pendingIRQ = false;
             return;
         }
-        else if (m_pendingIRQ)
+        else if (pendingIRQ)
         {
-            interruptSequence(IRQ);
-            m_pendingNMI = m_pendingIRQ = false;
+            interruptSequence(IRQ_);
+            pendingNMI = pendingIRQ = false;
             return;
         }
 
-        int psw =    f_N << 7 |
-                     f_V << 6 |
+        int psw =    P.N << 7 |
+                     P.V << 6 |
                        1 << 5 |
-                     f_D << 3 |
-                     f_I << 2 |
-                     f_Z << 1 |
-                     f_C;
+                     P.D << 3 |
+                     P.I << 2 |
+                     P.Z << 1 |
+                     P.C;
         LOG_CPU << std::hex << std::setfill('0') << std::uppercase
-                  << std::setw(4) << +r_PC
+                  << std::setw(4) << +PC
                   << "  "
-                  << std::setw(2) << +m_bus.read(r_PC)
+                  << std::setw(2) << +bus.read(PC)
                   << "  "
-                  << "A:"   << std::setw(2) << +r_A << " "
-                  << "X:"   << std::setw(2) << +r_X << " "
-                  << "Y:"   << std::setw(2) << +r_Y << " "
+                  << "A:"   << std::setw(2) << +A << " "
+                  << "X:"   << std::setw(2) << +X << " "
+                  << "Y:"   << std::setw(2) << +Y << " "
                   << "P:"   << std::setw(2) << psw << " "
-                  << "SP:"  << std::setw(2) << +r_SP  << /*std::endl;*/" "
+                  << "SP:"  << std::setw(2) << +SP  << /*std::endl;*/" "
                   << "CYC:" << std::setw(3) << std::setfill(' ') << std::dec << ((m_cycles - 1) * 3) % 341
                   << std::endl;
 
-        Byte opcode = m_bus.read(r_PC++);
+        Byte opcode = bus.read(PC++);
 
         auto CycleLength = OperationCycles[opcode];
 
@@ -186,132 +186,132 @@ namespace sn
             case JSR:
                 //Push address of next instruction - 1, thus r_PC + 1 instead of r_PC + 2
                 //since r_PC and r_PC + 1 are address of subroutine
-                pushStack(static_cast<Byte>((r_PC + 1) >> 8));
-                pushStack(static_cast<Byte>(r_PC + 1));
-                r_PC = readAddress(r_PC);
+                pushStack(static_cast<Byte>((PC + 1) >> 8));
+                pushStack(static_cast<Byte>(PC + 1));
+                PC = readAddress(PC);
                 break;
             case RTS:
-                r_PC = pullStack();
-                r_PC |= pullStack() << 8;
-                ++r_PC;
+                PC = pullStack();
+                PC |= pullStack() << 8;
+                ++PC;
                 break;
             case RTI:
                 {
                     Byte flags = pullStack();
-                    f_N = flags & 0x80;
-                    f_V = flags & 0x40;
-                    f_D = flags & 0x8;
-                    f_I = flags & 0x4;
-                    f_Z = flags & 0x2;
-                    f_C = flags & 0x1;
+                    P.N = flags & 0x80;
+                    P.V = flags & 0x40;
+                    P.D = flags & 0x8;
+                    P.I = flags & 0x4;
+                    P.Z = flags & 0x2;
+                    P.C = flags & 0x1;
                 }
-                r_PC = pullStack();
-                r_PC |= pullStack() << 8;
+                PC = pullStack();
+                PC |= pullStack() << 8;
                 break;
             case JMP:
-                r_PC = readAddress(r_PC);
+                PC = readAddress(PC);
                 break;
             case JMPI:
                 {
-                    Address location = readAddress(r_PC);
+                    Address location = readAddress(PC);
                     //6502 has a bug such that the when the vector of anindirect address begins at the last byte of a page,
                     //the second byte is fetched from the beginning of that page rather than the beginning of the next
                     //Recreating here:
                     Address Page = location & 0xff00;
-                    r_PC = m_bus.read(location) |
-                           m_bus.read(Page | ((location + 1) & 0xff)) << 8;
+                    PC = bus.read(location) |
+                           bus.read(Page | ((location + 1) & 0xff)) << 8;
                 }
                 break;
             case PHP:
                 {
-                    Byte flags = f_N << 7 |
-                                 f_V << 6 |
+                    Byte flags = P.N << 7 |
+                                 P.V << 6 |
                                    1 << 5 | //supposed to always be 1
                                    1 << 4 | //PHP pushes with the B flag as 1, no matter what
-                                 f_D << 3 |
-                                 f_I << 2 |
-                                 f_Z << 1 |
-                                 f_C;
+                                 P.D << 3 |
+                                 P.I << 2 |
+                                 P.Z << 1 |
+                                 P.C;
                     pushStack(flags);
                 }
                 break;
             case PLP:
                 {
                     Byte flags = pullStack();
-                    f_N = flags & 0x80;
-                    f_V = flags & 0x40;
-                    f_D = flags & 0x8;
-                    f_I = flags & 0x4;
-                    f_Z = flags & 0x2;
-                    f_C = flags & 0x1;
+                    P.N = flags & 0x80;
+                    P.V = flags & 0x40;
+                    P.D = flags & 0x8;
+                    P.I = flags & 0x4;
+                    P.Z = flags & 0x2;
+                    P.C = flags & 0x1;
                 }
                 break;
             case PHA:
-                pushStack(r_A);
+                pushStack(A);
                 break;
             case PLA:
-                r_A = pullStack();
-                setZN(r_A);
+                A = pullStack();
+                setZN(A);
                 break;
             case DEY:
-                --r_Y;
-                setZN(r_Y);
+                --Y;
+                setZN(Y);
                 break;
             case DEX:
-                --r_X;
-                setZN(r_X);
+                --X;
+                setZN(X);
                 break;
             case TAY:
-                r_Y = r_A;
-                setZN(r_Y);
+                Y = A;
+                setZN(Y);
                 break;
             case INY:
-                ++r_Y;
-                setZN(r_Y);
+                ++Y;
+                setZN(Y);
                 break;
             case INX:
-                ++r_X;
-                setZN(r_X);
+                ++X;
+                setZN(X);
                 break;
             case CLC:
-                f_C = false;
+                P.C = false;
                 break;
             case SEC:
-                f_C = true;
+                P.C = true;
                 break;
             case CLI:
-                f_I = false;
+                P.I = false;
                 break;
             case SEI:
-                f_I = true;
+                P.I = true;
                 break;
             case CLD:
-                f_D = false;
+                P.D = false;
                 break;
             case SED:
-                f_D = true;
+                P.D = true;
                 break;
             case TYA:
-                r_A = r_Y;
-                setZN(r_A);
+                A = Y;
+                setZN(A);
                 break;
             case CLV:
-                f_V = false;
+                P.V = false;
                 break;
             case TXA:
-                r_A = r_X;
-                setZN(r_A);
+                A = X;
+                setZN(A);
                 break;
             case TXS:
-                r_SP = r_X;
+                SP = X;
                 break;
             case TAX:
-                r_X = r_A;
-                setZN(r_X);
+                X = A;
+                setZN(X);
                 break;
             case TSX:
-                r_X = r_SP;
-                setZN(r_X);
+                X = SP;
+                setZN(X);
                 break;
             default:
                 return false;
@@ -331,16 +331,16 @@ namespace sn
             switch (opcode >> BranchOnFlagShift)
             {
                 case Negative:
-                    branch = !(branch ^ f_N);
+                    branch = !(branch ^ P.N);
                     break;
                 case Overflow:
-                    branch = !(branch ^ f_V);
+                    branch = !(branch ^ P.V);
                     break;
                 case Carry:
-                    branch = !(branch ^ f_C);
+                    branch = !(branch ^ P.C);
                     break;
                 case Zero:
-                    branch = !(branch ^ f_Z);
+                    branch = !(branch ^ P.Z);
                     break;
                 default:
                     return false;
@@ -348,14 +348,14 @@ namespace sn
 
             if (branch)
             {
-                int8_t offset = m_bus.read(r_PC++);
+                int8_t offset = bus.read(PC++);
                 ++m_skipCycles;
-                auto newPC = static_cast<Address>(r_PC + offset);
-                setPageCrossed(r_PC, newPC, 2);
-                r_PC = newPC;
+                auto newPC = static_cast<Address>(PC + offset);
+                setPageCrossed(PC, newPC, 2);
+                PC = newPC;
             }
             else
-                ++r_PC;
+                ++PC;
             return true;
         }
         return false;
@@ -372,47 +372,47 @@ namespace sn
             {
                 case IndexedIndirectX:
                     {
-                        Byte zero_addr = r_X + m_bus.read(r_PC++);
+                        Byte zero_addr = X + bus.read(PC++);
                         //Addresses wrap in zero page mode, thus pass through a mask
-                        location = m_bus.read(zero_addr & 0xff) | m_bus.read((zero_addr + 1) & 0xff) << 8;
+                        location = bus.read(zero_addr & 0xff) | bus.read((zero_addr + 1) & 0xff) << 8;
                     }
                     break;
                 case ZeroPage:
-                    location = m_bus.read(r_PC++);
+                    location = bus.read(PC++);
                     break;
                 case Immediate:
-                    location = r_PC++;
+                    location = PC++;
                     break;
                 case Absolute:
-                    location = readAddress(r_PC);
-                    r_PC += 2;
+                    location = readAddress(PC);
+                    PC += 2;
                     break;
                 case IndirectY:
                     {
-                        Byte zero_addr = m_bus.read(r_PC++);
-                        location = m_bus.read(zero_addr & 0xff) | m_bus.read((zero_addr + 1) & 0xff) << 8;
+                        Byte zero_addr = bus.read(PC++);
+                        location = bus.read(zero_addr & 0xff) | bus.read((zero_addr + 1) & 0xff) << 8;
                         if (op != STA)
-                            setPageCrossed(location, location + r_Y);
-                        location += r_Y;
+                            setPageCrossed(location, location + Y);
+                        location += Y;
                     }
                     break;
                 case IndexedX:
                     // Address wraps around in the zero page
-                    location = (m_bus.read(r_PC++) + r_X) & 0xff;
+                    location = (bus.read(PC++) + X) & 0xff;
                     break;
                 case AbsoluteY:
-                    location = readAddress(r_PC);
-                    r_PC += 2;
+                    location = readAddress(PC);
+                    PC += 2;
                     if (op != STA)
-                        setPageCrossed(location, location + r_Y);
-                    location += r_Y;
+                        setPageCrossed(location, location + Y);
+                    location += Y;
                     break;
                 case AbsoluteX:
-                    location = readAddress(r_PC);
-                    r_PC += 2;
+                    location = readAddress(PC);
+                    PC += 2;
                     if (op != STA)
-                        setPageCrossed(location, location + r_X);
-                    location += r_X;
+                        setPageCrossed(location, location + X);
+                    location += X;
                     break;
                 default:
                     return false;
@@ -421,55 +421,55 @@ namespace sn
             switch (op)
             {
                 case ORA:
-                    r_A |= m_bus.read(location);
-                    setZN(r_A);
+                    A |= bus.read(location);
+                    setZN(A);
                     break;
                 case AND:
-                    r_A &= m_bus.read(location);
-                    setZN(r_A);
+                    A &= bus.read(location);
+                    setZN(A);
                     break;
                 case EOR:
-                    r_A ^= m_bus.read(location);
-                    setZN(r_A);
+                    A ^= bus.read(location);
+                    setZN(A);
                     break;
                 case ADC:
                     {
-                        Byte operand = m_bus.read(location);
-                        std::uint16_t sum = r_A + operand + f_C;
+                        Byte operand = bus.read(location);
+                        std::uint16_t sum = A + operand + P.C;
                         //Carry forward or UNSIGNED overflow
-                        f_C = sum & 0x100;
+                        P.C = sum & 0x100;
                         //SIGNED overflow, would only happen if the sign of sum is
                         //different from BOTH the operands
-                        f_V = (r_A ^ sum) & (operand ^ sum) & 0x80;
-                        r_A = static_cast<Byte>(sum);
-                        setZN(r_A);
+                        P.V = (A ^ sum) & (operand ^ sum) & 0x80;
+                        A = static_cast<Byte>(sum);
+                        setZN(A);
                     }
                     break;
                 case STA:
-                    m_bus.write(location, r_A);
+                    bus.write(location, A);
                     break;
                 case LDA:
-                    r_A = m_bus.read(location);
-                    setZN(r_A);
+                    A = bus.read(location);
+                    setZN(A);
                     break;
                 case SBC:
                     {
                         //High carry means "no borrow", thus negate and subtract
-                        std::uint16_t subtrahend = m_bus.read(location),
-                                 diff = r_A - subtrahend - !f_C;
+                        std::uint16_t subtrahend = bus.read(location),
+                                 diff = A - subtrahend - !P.C;
                         //if the ninth bit is 1, the resulting number is negative => borrow => low carry
-                        f_C = !(diff & 0x100);
+                        P.C = !(diff & 0x100);
                         //Same as ADC, except instead of the subtrahend,
                         //substitute with it's one complement
-                        f_V = (r_A ^ diff) & (~subtrahend ^ diff) & 0x80;
-                        r_A = diff;
+                        P.V = (A ^ diff) & (~subtrahend ^ diff) & 0x80;
+                        A = diff;
                         setZN(diff);
                     }
                     break;
                 case CMP:
                     {
-                        std::uint16_t diff = r_A - m_bus.read(location);
-                        f_C = !(diff & 0x100);
+                        std::uint16_t diff = A - bus.read(location);
+                        P.C = !(diff & 0x100);
                         setZN(diff);
                     }
                     break;
@@ -492,38 +492,38 @@ namespace sn
             switch (addr_mode)
             {
                 case Immediate_:
-                    location = r_PC++;
+                    location = PC++;
                     break;
                 case ZeroPage_:
-                    location = m_bus.read(r_PC++);
+                    location = bus.read(PC++);
                     break;
                 case Accumulator:
                     break;
                 case Absolute_:
-                    location = readAddress(r_PC);
-                    r_PC += 2;
+                    location = readAddress(PC);
+                    PC += 2;
                     break;
                 case Indexed:
                     {
-                        location = m_bus.read(r_PC++);
+                        location = bus.read(PC++);
                         Byte index;
                         if (op == LDX || op == STX)
-                            index = r_Y;
+                            index = Y;
                         else
-                            index = r_X;
+                            index = X;
                         //The mask wraps address around zero page
                         location = (location + index) & 0xff;
                     }
                     break;
                 case AbsoluteIndexed:
                     {
-                        location = readAddress(r_PC);
-                        r_PC += 2;
+                        location = readAddress(PC);
+                        PC += 2;
                         Byte index;
                         if (op == LDX || op == STX)
-                            index = r_Y;
+                            index = Y;
                         else
-                            index = r_X;
+                            index = X;
                         setPageCrossed(location, location + index);
                         location += index;
                     }
@@ -539,63 +539,63 @@ namespace sn
                 case ROL:
                     if (addr_mode == Accumulator)
                     {
-                        auto prev_C = f_C;
-                        f_C = r_A & 0x80;
-                        r_A <<= 1;
+                        auto prev_C = P.C;
+                        P.C = A & 0x80;
+                        A <<= 1;
                         //If Rotating, set the bit-0 to the the previous carry
-                        r_A = r_A | (prev_C && (op == ROL));
-                        setZN(r_A);
+                        A = A | (prev_C && (op == ROL));
+                        setZN(A);
                     }
                     else
                     {
-                        auto prev_C = f_C;
-                        operand = m_bus.read(location);
-                        f_C = operand & 0x80;
+                        auto prev_C = P.C;
+                        operand = bus.read(location);
+                        P.C = operand & 0x80;
                         operand = operand << 1 | (prev_C && (op == ROL));
                         setZN(operand);
-                        m_bus.write(location, operand);
+                        bus.write(location, operand);
                     }
                     break;
                 case LSR:
                 case ROR:
                     if (addr_mode == Accumulator)
                     {
-                        auto prev_C = f_C;
-                        f_C = r_A & 1;
-                        r_A >>= 1;
+                        auto prev_C = P.C;
+                        P.C = A & 1;
+                        A >>= 1;
                         //If Rotating, set the bit-7 to the previous carry
-                        r_A = r_A | (prev_C && (op == ROR)) << 7;
-                        setZN(r_A);
+                        A = A | (prev_C && (op == ROR)) << 7;
+                        setZN(A);
                     }
                     else
                     {
-                        auto prev_C = f_C;
-                        operand = m_bus.read(location);
-                        f_C = operand & 1;
+                        auto prev_C = P.C;
+                        operand = bus.read(location);
+                        P.C = operand & 1;
                         operand = operand >> 1 | (prev_C && (op == ROR)) << 7;
                         setZN(operand);
-                        m_bus.write(location, operand);
+                        bus.write(location, operand);
                     }
                     break;
                 case STX:
-                    m_bus.write(location, r_X);
+                    bus.write(location, X);
                     break;
                 case LDX:
-                    r_X = m_bus.read(location);
-                    setZN(r_X);
+                    X = bus.read(location);
+                    setZN(X);
                     break;
                 case DEC:
                     {
-                        auto tmp = m_bus.read(location) - 1;
+                        auto tmp = bus.read(location) - 1;
                         setZN(tmp);
-                        m_bus.write(location, tmp);
+                        bus.write(location, tmp);
                     }
                     break;
                 case INC:
                     {
-                        auto tmp = m_bus.read(location) + 1;
+                        auto tmp = bus.read(location) + 1;
                         setZN(tmp);
-                        m_bus.write(location, tmp);
+                        bus.write(location, tmp);
                     }
                     break;
                 default:
@@ -614,24 +614,24 @@ namespace sn
             switch (static_cast<AddrMode2>((opcode & AddrModeMask) >> AddrModeShift))
             {
                 case Immediate_:
-                    location = r_PC++;
+                    location = PC++;
                     break;
                 case ZeroPage_:
-                    location = m_bus.read(r_PC++);
+                    location = bus.read(PC++);
                     break;
                 case Absolute_:
-                    location = readAddress(r_PC);
-                    r_PC += 2;
+                    location = readAddress(PC);
+                    PC += 2;
                     break;
                 case Indexed:
                     // Address wraps around in the zero page
-                    location = (m_bus.read(r_PC++) + r_X) & 0xff;
+                    location = (bus.read(PC++) + X) & 0xff;
                     break;
                 case AbsoluteIndexed:
-                    location = readAddress(r_PC);
-                    r_PC += 2;
-                    setPageCrossed(location, location + r_X);
-                    location += r_X;
+                    location = readAddress(PC);
+                    PC += 2;
+                    setPageCrossed(location, location + X);
+                    location += X;
                     break;
                 default:
                     return false;
@@ -640,29 +640,29 @@ namespace sn
             switch (static_cast<Operation0>((opcode & OperationMask) >> OperationShift))
             {
                 case BIT:
-                    operand = m_bus.read(location);
-                    f_Z = !(r_A & operand);
-                    f_V = operand & 0x40;
-                    f_N = operand & 0x80;
+                    operand = bus.read(location);
+                    P.Z = !(A & operand);
+                    P.V = operand & 0x40;
+                    P.N = operand & 0x80;
                     break;
                 case STY:
-                    m_bus.write(location, r_Y);
+                    bus.write(location, Y);
                     break;
                 case LDY:
-                    r_Y = m_bus.read(location);
-                    setZN(r_Y);
+                    Y = bus.read(location);
+                    setZN(Y);
                     break;
                 case CPY:
                     {
-                        std::uint16_t diff = r_Y - m_bus.read(location);
-                        f_C = !(diff & 0x100);
+                        std::uint16_t diff = Y - bus.read(location);
+                        P.C = !(diff & 0x100);
                         setZN(diff);
                     }
                     break;
                 case CPX:
                     {
-                        std::uint16_t diff = r_X - m_bus.read(location);
-                        f_C = !(diff & 0x100);
+                        std::uint16_t diff = X - bus.read(location);
+                        P.C = !(diff & 0x100);
                         setZN(diff);
                     }
                     break;
@@ -677,7 +677,7 @@ namespace sn
 
     Address CPU::readAddress(Address addr)
     {
-        return m_bus.read(addr) | m_bus.read(addr + 1) << 8;
+        return bus.read(addr) | bus.read(addr + 1) << 8;
     }
 
 };

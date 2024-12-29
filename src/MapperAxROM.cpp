@@ -1,7 +1,7 @@
 #include "MapperAxROM.h"
 #include "Log.h"
 
-namespace sn
+namespace _NES
 {
     MapperAxROM::MapperAxROM(Cartridge &cart, std::function<void(void)> mirroring_cb) :
         Mapper(cart, Mapper::AxROM),

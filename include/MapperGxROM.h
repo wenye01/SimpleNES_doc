@@ -1,6 +1,7 @@
+#pragma once
 #include"Mapper.h"
 
-namespace sn
+namespace _NES
 {
     class MapperGxROM : public Mapper
     {

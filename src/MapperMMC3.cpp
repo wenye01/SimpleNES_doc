@@ -1,7 +1,7 @@
 #include "MapperMMC3.h"
 #include "Log.h"
 
-namespace sn
+namespace _NES
 {
     MapperMMC3::MapperMMC3(Cartridge &cart, std::function<void()> interrupt_cb, std::function<void(void)> mirroring_cb) :
     Mapper(cart, Mapper::MMC3),
@@ -233,4 +233,4 @@ namespace sn
         return m_mirroring;
     }
 
-} // namespace sn
+} // namespace _NES

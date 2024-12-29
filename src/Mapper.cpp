@@ -9,14 +9,14 @@
 #include "MapperColorDreams.h"
 #include "MapperGxROM.h"
 
-namespace sn
+namespace _NES
 {
     NameTableMirroring Mapper::getNameTableMirroring()
     {
         return static_cast<NameTableMirroring>(m_cartridge.getNameTableMirroring());
     }
 
-    std::unique_ptr<Mapper> Mapper::createMapper(Mapper::Type mapper_t, sn::Cartridge& cart, std::function<void()> interrupt_cb, std::function<void(void)> mirroring_cb)
+    std::unique_ptr<Mapper> Mapper::createMapper(Mapper::Type mapper_t, _NES::Cartridge& cart, std::function<void()> interrupt_cb, std::function<void(void)> mirroring_cb)
     {
         std::unique_ptr<Mapper> ret(nullptr);
         switch (mapper_t)

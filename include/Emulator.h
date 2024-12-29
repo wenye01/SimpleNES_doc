@@ -1,5 +1,4 @@
-#ifndef EMULATOR_H
-#define EMULATOR_H
+#pragma once
 #include <SFML/Graphics.hpp>
 #include <chrono>
 
@@ -9,7 +8,7 @@
 #include "PictureBus.h"
 #include "Controller.h"
 
-namespace sn
+namespace _NES
 {
     using TimePoint = std::chrono::high_resolution_clock::time_point;
 
@@ -47,4 +46,3 @@ namespace sn
         std::chrono::nanoseconds m_cpuCycleDuration;
     };
 }
-#endif // EMULATOR_H
